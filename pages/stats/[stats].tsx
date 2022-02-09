@@ -1,18 +1,17 @@
-import type { GetServerSidePropsContext, NextPage } from 'next'
+import type { NextPage } from 'next'
 import Head from 'next/head'
 import styles from '../../styles/Home.module.css'
-import connectDB from '../../utils/connection'
-import Anime, { IAnime } from '../../models/Anime'
-import { FilterQuery } from 'mongoose'
+import { useRouter } from 'next/router'
+import useSWR from 'swr'
+import {IAnime} from '../../models/Anime'
+import fetcher from '../../utils/fetcher'
 
-export interface StatsProps {
-    localAnimeList: IAnime[]
-}
-
-const Stats: NextPage<StatsProps> = (props) => {
-
-    console.log(props.localAnimeList[3]);
-
+const Stats: NextPage = () => {
+    const router = useRouter();
+    const username = router.query.stats;
+    
+    const {data:animeList, error} = useSWR<IAnime[]>(`/api/stats/${username}`, fetcher)
+    const components = animeList?.map(anime => <p key={anime._id}>{anime.title}</p>)
     return (
         <div className={styles.container}>
             <Head>
@@ -22,7 +21,7 @@ const Stats: NextPage<StatsProps> = (props) => {
             </Head>
 
             <main className={styles.main}>
-                
+                {components}
             </main>
 
             <footer className={styles.footer}>
@@ -32,7 +31,7 @@ const Stats: NextPage<StatsProps> = (props) => {
     )
 }
 
-
+/*
 export const getServerSideProps = async (context:GetServerSidePropsContext) => {
     const username = context.query.stats as String;
     //limit is 1000 for now, temporary fix until I want to be bothered with pagination
@@ -67,4 +66,5 @@ export const getServerSideProps = async (context:GetServerSidePropsContext) => {
     }
 
 }
+*/
 export default Stats
