@@ -1,9 +1,21 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { ChangeEvent, FormEvent, useState } from 'react'
 import styles from '../styles/Home.module.scss'
 
 const Home: NextPage = (props) => {
+  const router = useRouter();
+  const [usernameControlForm, setUsernameControlForm] = useState('');
 
+  const onFormChange = (e:ChangeEvent<HTMLInputElement>) => {
+    setUsernameControlForm(e.currentTarget.value);
+  }
+
+  const onFormSubmit = (e:FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    router.push(`/stats/${usernameControlForm}`);
+  }
 
   return (
     <div className={styles.container}>
@@ -20,18 +32,18 @@ const Home: NextPage = (props) => {
 
               <div className="columns is-vcentered is-desktop">
                 <div className={`${styles.firstcol} column is-half-desktop`}>
-                  <form className='is-clipped'>
+                  <form className='is-clipped' onSubmit={onFormSubmit}>
                     <div className="field">
                       <label className="label has-text-white">Enter <span className={styles.mal}>MyAnimeList</span> Username</label>
                       <div className="control">
-                        <input className="input" type="text" placeholder="animeappreciator420" />
+                        <input className="input" type="text" placeholder="animeappreciator420" onChange={onFormChange}/>
                       </div>
                       <p className='help has-text-white'>Please only enter your username, not the link to your profile.</p>
                     </div>
 
                     <div className="field">
                       <div className="control">
-                        <input className="button is-light is-pulled-right" type="submit" value="Search" />
+                        <input className="button is-light is-pulled-right has-text-weight-semibold" type="submit" value="Search" />
                       </div>
                     </div>
 
