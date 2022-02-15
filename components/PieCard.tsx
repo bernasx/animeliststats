@@ -1,23 +1,25 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { useState, ChangeEvent } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { getRandomInt } from '../utils/getRandomInt';
 
 export interface PieCardProps {
     title: String,
-    topNumber: number,
     labels: string[] | undefined,
     fillData: number[] | undefined
 }
 
-const PieCard = ({ title, labels, fillData, topNumber }: PieCardProps) => {
+const PieCard = ({ title, labels, fillData }: PieCardProps) => {
     ChartJS.register(ArcElement, Tooltip, Legend);
+    const [topNumber, setTopNumber] = useState(4);
+    const [ascending, setAscending] = useState(true);
 
-
-    const slicedLabels = labels?.slice(0 - topNumber);
-    const slicedFillData = fillData?.slice(0 - topNumber);
+    const slicedLabels = ascending ? labels?.slice(0 - topNumber) : labels?.slice(0,topNumber) ;
+    const slicedFillData = ascending ? fillData?.slice(0 - topNumber) : fillData?.slice(0, topNumber);
+    
     const colors = [];
-    for(let i = 0; i < topNumber ; i++) {
-        colors.push(`rgba(${getRandomInt(0,255)}, ${getRandomInt(0,255)}, ${getRandomInt(0,255)}, 0.5)`)
+    for (let i = 0; i < topNumber; i++) {
+        colors.push(`rgba(${getRandomInt(0, 255)}, ${getRandomInt(0, 255)}, ${getRandomInt(0, 255)}, 0.5)`)
     }
 
     // start out like this to show while data loads
@@ -46,12 +48,23 @@ const PieCard = ({ title, labels, fillData, topNumber }: PieCardProps) => {
                 {
                     label: '',
                     data: slicedFillData as number[],
-                    backgroundColor:colors,
-                    borderColor:colors,
+                    backgroundColor: colors,
+                    borderColor: colors,
                     borderWidth: 1,
                 },
             ],
         }
+    }
+
+    const onTopNumberChange = (e:ChangeEvent<HTMLInputElement>) => {
+        let num = parseInt(e.currentTarget.value);
+        if(!num){num = 1};
+        if(num > 25){num = 25; e.currentTarget.value = '25'};
+        setTopNumber(num);
+      }
+    
+    const onOrderButton = () => {
+        setAscending(!ascending);
     }
 
     return (
@@ -64,6 +77,16 @@ const PieCard = ({ title, labels, fillData, topNumber }: PieCardProps) => {
             <div className="card-content">
                 <Pie data={data} />
             </div>
+            <footer className="card-footer">
+                <div className='card-footer-item'>
+                    <label className="label"># of items </label>
+                    <input className="input" type="text" placeholder="4" defaultValue="4" onChange={onTopNumberChange}/>
+                </div> 
+                <div className='card-footer-item'>
+                 
+                    <button className='button' onClick={onOrderButton}>{ascending ? 'Descending':'Ascending'}</button>
+                </div> 
+            </footer>
         </div>
     );
 }

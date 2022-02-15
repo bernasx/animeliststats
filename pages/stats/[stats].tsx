@@ -28,8 +28,7 @@ const Stats: NextPage = () => {
                         <div className='container'>
                             <div className='columns'>
                                 <div className='column is-half'>
-                                    <PieCard title={'Most Watched Genres'} 
-                                    topNumber={20} 
+                                    <PieCard title={'Most Watched Genres'}
                                     labels={mostWatchedGenresArr?.[0]}
                                     fillData={mostWatchedGenresArr?.[1]}/>
                                 </div>

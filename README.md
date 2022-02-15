@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+# Animestats
+
+Data by Anime-Offline-Database and the MAL API. Using Chart.JS and Next.JS to build the frontend and backend. Mongoose for a mongodb database and Bulma for CSS.
+
 ## Getting Started
 
 First, download the anime offline database at https://github.com/manami-project/anime-offline-database. In order to minimize calls this is what we will use to look up that.
