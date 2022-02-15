@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
-import PieCard from '../../components/PieCard'
+import PieCard, {PieCardProps} from '../../components/PieCard'
 import { IAnime } from '../../models/Anime'
 import fetcher from '../../utils/fetcher'
 import styles from '../../styles/Stats.module.scss'
@@ -12,8 +12,8 @@ const Stats: NextPage = () => {
     const username = router.query.stats;
     const { data: animeList, error } = useSWR<IAnime[]>(`/api/stats/${username}`, fetcher)
 
-
-
+    const mostWatchedGenresArr = mostWatchedGenres(animeList);
+   
     return (
         <div>
             <Head>
@@ -28,7 +28,10 @@ const Stats: NextPage = () => {
                         <div className='container'>
                             <div className='columns'>
                                 <div className='column is-half'>
-                                    <PieCard />
+                                    <PieCard title={'Most Watched Genres'} 
+                                    topNumber={20} 
+                                    labels={mostWatchedGenresArr?.[0]}
+                                    fillData={mostWatchedGenresArr?.[1]}/>
                                 </div>
                             </div>
                         </div>
@@ -43,5 +46,51 @@ const Stats: NextPage = () => {
         </div>
     )
 }
+
+
+const mostWatchedGenres = (rawData: IAnime[] | undefined) => {
+
+    if(!rawData) {return undefined};
+
+    // let us make a dict of all [genre]:count
+    const initialValue:{
+        [key: string]: any
+    } = {};
+
+    // accumulate it
+    const tagData = rawData.reduce((accumulator, current) => {
+        //add the tags
+        current.tags.forEach((tag) => {
+            const nTag = tag as string;
+            if(accumulator[nTag]) {
+                accumulator[nTag] += 1;
+            } else {
+                accumulator[nTag] = 1;
+            }
+        })
+        return accumulator;
+    }, initialValue)
+
+    //sort it as a key:value pair
+    const sortable = [];
+    for(const genre in tagData) {
+        sortable.push({genre:`${genre} (${tagData[genre]})`,count:tagData[genre]});
+    }
+
+    sortable.sort(function(a, b) {
+        return a.count - b.count;
+    });
+
+    // now convert it to 2 arrays for usage in the component
+    const returnSort:[string[], number[]] = [[],[]];
+
+    for(const sortedData of sortable) {
+        returnSort[0].push(sortedData.genre);
+        returnSort[1].push(sortedData.count);
+    }
+
+    return returnSort;
+}
+
 
 export default Stats
