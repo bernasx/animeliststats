@@ -2,14 +2,18 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
-import {IAnime} from '../../models/Anime'
+import PieCard from '../../components/PieCard'
+import { IAnime } from '../../models/Anime'
 import fetcher from '../../utils/fetcher'
+import styles from '../../styles/Stats.module.scss'
 
 const Stats: NextPage = () => {
     const router = useRouter();
     const username = router.query.stats;
-    const {data:animeList, error} = useSWR<IAnime[]>(`/api/stats/${username}`, fetcher)
-    const components = animeList?.map((anime, index) => <p key={anime._id}>{`${index} - ${anime.title}`}</p>)
+    const { data: animeList, error } = useSWR<IAnime[]>(`/api/stats/${username}`, fetcher)
+
+
+
     return (
         <div>
             <Head>
@@ -18,51 +22,26 @@ const Stats: NextPage = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main>
-                {components}
+            <main className={styles.main}>
+                <section className='hero'>
+                    <div className='hero-body'>
+                        <div className='container'>
+                            <div className='columns'>
+                                <div className='column is-half'>
+                                    <PieCard />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </main>
 
             <footer>
                 <hr />
+                <p>Blah blah blah</p>
             </footer>
         </div>
     )
 }
 
-/*
-export const getServerSideProps = async (context:GetServerSidePropsContext) => {
-    const username = context.query.stats as String;
-    //limit is 1000 for now, temporary fix until I want to be bothered with pagination
-    const getAnimeURL = `https://api.myanimelist.net/v2/users/${username}/animelist?status=completed&limit=1000`
-    // get list
-    const MAL_ID  = process.env.MAL_ID as string;
-    let animeList:{node:{id:Number, title:String}}[] = await fetch(getAnimeURL,{
-      headers: {
-        'Content-Type': 'application/json',
-        'X-MAL-CLIENT-ID': MAL_ID
-      }
-    } ).then(res => res.json()).then(data => data.data);
-  
-    connectDB();
-    const localAnimeList = await Promise.all(animeList.map(async (anime) => {
-        const query: FilterQuery<IAnime> = {sources:{$all:[`https://myanimelist.net/anime/${anime.node.id}`]}};
-        const res = await Anime.findOne(query);
-        
-        const result = res?.toObject();
-        if (result) {
-            result._id = result?._id.toString();
-        }
-        return result as IAnime;
-    } ))
-
-    console.log(localAnimeList)
-
-    return {
-        props: {
-            localAnimeList,
-        },
-    }
-
-}
-*/
 export default Stats
