@@ -13,9 +13,9 @@ const PieCard = ({ title, labels, fillData }: PieCardProps) => {
     ChartJS.register(ArcElement, Tooltip, Legend);
     const [topNumber, setTopNumber] = useState(4);
     const [ascending, setAscending] = useState(true);
-
-    const slicedLabels = ascending ? labels?.slice(0 - topNumber) : labels?.slice(0,topNumber) ;
-    const slicedFillData = ascending ? fillData?.slice(0 - topNumber) : fillData?.slice(0, topNumber);
+    
+    const slicedLabels = ascending ? labels?.slice(0,topNumber) : labels?.slice(0 - topNumber) ;
+    const slicedFillData = ascending ? fillData?.slice(0, topNumber) : fillData?.slice(0 - topNumber);
     
     const colors = [];
     for (let i = 0; i < topNumber; i++) {

@@ -77,7 +77,13 @@ const mostWatchedGenres = (rawData: IAnime[] | undefined) => {
     }
 
     sortable.sort(function(a, b) {
-        return a.count - b.count;
+        if (a.count > b.count) {
+			return -1;
+		}
+		if (a.count < b.count) {
+			return 1;
+		}
+		return 0;
     });
 
     // now convert it to 2 arrays for usage in the component
