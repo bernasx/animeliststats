@@ -2,18 +2,25 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import useSWR from 'swr'
-import PieCard, {PieCardProps} from '../../components/PieCard'
+import PieCard from '../../components/PieCard'
+import VerticalBarCard from '../../components/VerticalBarCard'
 import { IAnime } from '../../models/Anime'
 import fetcher from '../../utils/fetcher'
 import styles from '../../styles/Stats.module.scss'
+import { mostWatchedGenres, animeCountByYear } from '../../utils/statistics'
 
 const Stats: NextPage = () => {
     const router = useRouter();
     const username = router.query.stats;
     const { data: animeList, error } = useSWR<IAnime[]>(`/api/stats/${username}`, fetcher)
 
+    if (error) {
+        console.error(error);
+    }
+
     const mostWatchedGenresArr = mostWatchedGenres(animeList);
-   
+    const animeCountByYearArr = animeCountByYear(animeList);
+    console.log(animeCountByYearArr)
     return (
         <div>
             <Head>
@@ -29,8 +36,13 @@ const Stats: NextPage = () => {
                             <div className='columns'>
                                 <div className='column is-half'>
                                     <PieCard title={'Most Watched Genres'}
-                                    labels={mostWatchedGenresArr?.[0]}
-                                    fillData={mostWatchedGenresArr?.[1]}/>
+                                        labels={mostWatchedGenresArr?.[0]}
+                                        fillData={mostWatchedGenresArr?.[1]} />
+                                </div>
+                                <div className='column is-half'>
+                                    <VerticalBarCard title={'Anime By Release Year'}
+                                        labels={animeCountByYearArr?.[0]}
+                                        fillData={animeCountByYearArr?.[1]} />
                                 </div>
                             </div>
                         </div>
@@ -38,64 +50,17 @@ const Stats: NextPage = () => {
                 </section>
             </main>
 
-            <footer>
-                <hr />
-                <p>Blah blah blah</p>
+            <footer className={`footer ${styles.footer}`}>
+                <div className="content has-text-centered">
+                    <p className='has-text-white'>
+                        <strong className='has-text-white'>AnimeStats</strong> can be found <a className={`${styles.footeranchor}`} href="https://github.com/bernasx">here.</a>
+                    </p>
+                </div>
             </footer>
         </div>
     )
 }
 
-
-const mostWatchedGenres = (rawData: IAnime[] | undefined) => {
-
-    if(!rawData) {return undefined};
-
-    // let us make a dict of all [genre]:count
-    const initialValue:{
-        [key: string]: any
-    } = {};
-
-    // accumulate it
-    const tagData = rawData.reduce((accumulator, current) => {
-        //add the tags
-        current.tags.forEach((tag) => {
-            const nTag = tag as string;
-            if(accumulator[nTag]) {
-                accumulator[nTag] += 1;
-            } else {
-                accumulator[nTag] = 1;
-            }
-        })
-        return accumulator;
-    }, initialValue)
-
-    //sort it as a key:value pair
-    const sortable = [];
-    for(const genre in tagData) {
-        sortable.push({genre:`${genre} (${tagData[genre]})`,count:tagData[genre]});
-    }
-
-    sortable.sort(function(a, b) {
-        if (a.count > b.count) {
-			return -1;
-		}
-		if (a.count < b.count) {
-			return 1;
-		}
-		return 0;
-    });
-
-    // now convert it to 2 arrays for usage in the component
-    const returnSort:[string[], number[]] = [[],[]];
-
-    for(const sortedData of sortable) {
-        returnSort[0].push(sortedData.genre);
-        returnSort[1].push(sortedData.count);
-    }
-
-    return returnSort;
-}
 
 
 export default Stats

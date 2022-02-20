@@ -1,27 +1,38 @@
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import React from 'react';
 import { useState, ChangeEvent } from 'react';
-import { Pie } from 'react-chartjs-2';
-import { getRandomInt } from '../utils/getRandomInt';
 
-export interface PieCardProps {
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  );
+
+  export interface VerticalBarCardProps {
     title: String,
     labels: string[] | undefined,
     fillData: number[] | undefined
 }
 
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-const PieCard = ({ title, labels, fillData }: PieCardProps) => {
+const VerticalBarCard = ({ title, labels, fillData }: VerticalBarCardProps) => {
     const [topNumber, setTopNumber] = useState(4);
     const [ascending, setAscending] = useState(true);
     
     const slicedLabels = ascending ? labels?.slice(0,topNumber) : labels?.slice(0 - topNumber) ;
     const slicedFillData = ascending ? fillData?.slice(0, topNumber) : fillData?.slice(0 - topNumber);
-    
-    const colors = [];
-    for (let i = 0; i < topNumber; i++) {
-        colors.push(`rgba(${getRandomInt(0, 255)}, ${getRandomInt(0, 255)}, ${getRandomInt(0, 255)}, 0.5)`)
-    }
 
     // start out like this to show while data loads
     let data = {
@@ -49,8 +60,8 @@ const PieCard = ({ title, labels, fillData }: PieCardProps) => {
                 {
                     label: '',
                     data: slicedFillData as number[],
-                    backgroundColor: colors,
-                    borderColor: colors,
+                    backgroundColor: ['rgba(255, 99, 132, 0.5)'],
+                    borderColor: ['rgba(255, 99, 132, 0.5)'],
                     borderWidth: 1,
                 },
             ],
@@ -68,6 +79,19 @@ const PieCard = ({ title, labels, fillData }: PieCardProps) => {
         setAscending(!ascending);
     }
 
+    const options = {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          title: {
+            display: false,
+            text: 'Chart.js Bar Chart',
+          },
+        },
+      };
+
     return (
         <div className="card">
             <header className="card-header">
@@ -76,7 +100,7 @@ const PieCard = ({ title, labels, fillData }: PieCardProps) => {
                 </p>
             </header>
             <div className="card-content">
-                <Pie data={data} />
+                <Bar options={options} data={data} />
             </div>
             <footer className="card-footer">
                 <div className='card-footer-item'>
@@ -92,4 +116,4 @@ const PieCard = ({ title, labels, fillData }: PieCardProps) => {
     );
 }
 
-export default PieCard;
+export default VerticalBarCard;
