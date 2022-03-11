@@ -7,7 +7,7 @@ import VerticalBarCard from '../../components/VerticalBarCard'
 import { IAnime } from '../../models/Anime'
 import fetcher from '../../utils/fetcher'
 import styles from '../../styles/Stats.module.scss'
-import { mostWatchedGenres, animeCountByYear } from '../../utils/statistics'
+import { mostWatchedGenres, animeCountByYear, mostCommonFirstLetter } from '../../utils/statistics'
 
 const Stats: NextPage = () => {
     const router = useRouter();
@@ -20,7 +20,7 @@ const Stats: NextPage = () => {
 
     const mostWatchedGenresArr = mostWatchedGenres(animeList);
     const animeCountByYearArr = animeCountByYear(animeList);
-    console.log(animeCountByYearArr)
+    const mostCommonFirstLetterArr = mostCommonFirstLetter(animeList);
     return (
         <div>
             <Head>
@@ -37,12 +37,28 @@ const Stats: NextPage = () => {
                                 <div className='column is-half'>
                                     <PieCard title={'Most Watched Genres'}
                                         labels={mostWatchedGenresArr?.[0]}
-                                        fillData={mostWatchedGenresArr?.[1]} />
+                                        fillData={mostWatchedGenresArr?.[1]}
+                                        canBypassNumberLimit={false}
+                                        canSwapOrder={false}
+                                        startingNumber={4} />
                                 </div>
                                 <div className='column is-half'>
                                     <VerticalBarCard title={'Anime By Release Year'}
                                         labels={animeCountByYearArr?.[0]}
-                                        fillData={animeCountByYearArr?.[1]} />
+                                        fillData={animeCountByYearArr?.[1]}
+                                        canBypassNumberLimit={true}
+                                        canSwapOrder={false}
+                                        startingNumber={5} />
+                                </div>
+                            </div>
+                            <div className='columns'>
+                                <div className='column is-half'>
+                                    <VerticalBarCard title={'First Letter Frequency'}
+                                        labels={mostCommonFirstLetterArr?.[0]}
+                                        fillData={mostCommonFirstLetterArr?.[1]}
+                                        canBypassNumberLimit={true}
+                                        canSwapOrder={false}
+                                        startingNumber={26} />
                                 </div>
                             </div>
                         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, useEffect } from 'react';
 
 import {
   Chart as ChartJS,
@@ -24,15 +24,23 @@ ChartJS.register(
   export interface VerticalBarCardProps {
     title: String,
     labels: string[] | undefined,
-    fillData: number[] | undefined
+    fillData: number[] | undefined,
+    canSwapOrder: boolean,
+    canBypassNumberLimit: boolean,
+    startingNumber: number,
 }
 
-const VerticalBarCard = ({ title, labels, fillData }: VerticalBarCardProps) => {
+const VerticalBarCard = ({ title, labels, fillData, canSwapOrder, canBypassNumberLimit, startingNumber }: VerticalBarCardProps) => {
     const [topNumber, setTopNumber] = useState(4);
     const [ascending, setAscending] = useState(true);
     
     const slicedLabels = ascending ? labels?.slice(0,topNumber) : labels?.slice(0 - topNumber) ;
     const slicedFillData = ascending ? fillData?.slice(0, topNumber) : fillData?.slice(0 - topNumber);
+
+    useEffect(() => {
+      setTopNumber(startingNumber);
+    }, [startingNumber])
+    
 
     // start out like this to show while data loads
     let data = {
@@ -69,14 +77,23 @@ const VerticalBarCard = ({ title, labels, fillData }: VerticalBarCardProps) => {
     }
 
     const onTopNumberChange = (e:ChangeEvent<HTMLInputElement>) => {
-        let num = parseInt(e.currentTarget.value);
-        if(!num){num = 1};
-        if(num > 25){num = 25; e.currentTarget.value = '25'};
-        setTopNumber(num);
+        if(canBypassNumberLimit) {
+            let num = parseInt(e.currentTarget.value);
+            if(!num){num = 1};
+            setTopNumber(num);
+        } else {
+            let num = parseInt(e.currentTarget.value);
+            if(!num){num = 1};
+            if(num > 25){num = 25; e.currentTarget.value = '25'};
+            setTopNumber(num);
+        }
+        
       }
     
     const onOrderButton = () => {
-        setAscending(!ascending);
+        if(canSwapOrder){
+            setAscending(!ascending);
+        }
     }
 
     const options = {
@@ -105,7 +122,7 @@ const VerticalBarCard = ({ title, labels, fillData }: VerticalBarCardProps) => {
             <footer className="card-footer">
                 <div className='card-footer-item'>
                     <label className="label"># of items </label>
-                    <input className="input" type="text" placeholder="4" defaultValue="4" onChange={onTopNumberChange}/>
+                    <input className="input" type="text" defaultValue={topNumber} onChange={onTopNumberChange}/>
                 </div> 
                 <div className='card-footer-item'>
                  
