@@ -17,3 +17,6 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+![chrome_LLYnr9DVa2_15-02-2022](https://user-images.githubusercontent.com/38398866/181934035-382b5fd7-3900-44cc-b84f-bc33ba0ad131.png)
+![chrome_K9Ux0zMlDs_20-02-2022](https://user-images.githubusercontent.com/38398866/181934022-8a784c6e-15e5-47a3-99f1-ef4431bfb0c1.png)
